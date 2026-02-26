@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<title>Gayatri Jewellers</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getDatabase, ref, onValue, set, push, remove, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+  const firebaseConfig = {
+    apiKey: "AIzaSyD8qXLnILIfXGN8Z7POPAS9TngdTAgoKT8",
+    authDomain: "gayatri-jewellers-ac7a9.firebaseapp.com",
+    databaseURL: "https://gayatri-jewellers-ac7a9-default-rtdb.firebaseio.com",
+    projectId: "gayatri-jewellers-ac7a9",
+    storageBucket: "gayatri-jewellers-ac7a9.appspot.com",
+    messagingSenderId: "910567295800",
+    appId: "1:910567295800:web:7166b4284906bb66eacfcd"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  window._db = db; window._ref = ref; window._onValue = onValue;
+  window._set = set; window._push = push; window._remove = remove; window._get = get;
+  window._firebaseReady = true;
+  document.dispatchEvent(new Event('firebase-ready'));
+</script>
+
+<style>
+:root {
+  --gold: #C9A84C;
+  --gold2: #E2BC6B;
+  --gold3: #F5D98B;
+  --gold-dark: #A07830;
+  --gold-bg: #FDF8EE;
+  --gold-border: #EDD98A;
+  --white: #FFFFFF;
+  --off-white: #FAFAF9;
+  --gray-50: #F8F8F7;
+  --gray-100: #F0EFED;
+  --gray-200: #E4E3DF;
+  --gray-400: #A09E99;
+  --gray-600: #6B6A66;
+  --gray-800: #2C2B28;
+  --black: #1A1917;
+  --red: #DC4C3E;
+  --green: #2D7D52;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow: 0 4px 16px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; }
+body { font-family: 'Inter', sans-serif; background: var(--white); color: var(--black); max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; }
+
+/* ── LOADING ── */
+#loading { position: fixed; inset: 0; background: var(--white); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; gap: 20px; }
+.loading-logo { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--gold-dark), var(--gold2)); display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; box-shadow: 0 8px 24px rgba(201,168,76,0.35); animation: pulse 1.8s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.05);opacity:0.85;} }
+.loading-name { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--black); letter-spacing: 0.5px; }
+.loading-sub { font-size: 11px; color: var(--gray-400); letter-spacing: 3px; text-transform: uppercase; }
+
+/* ── LOGIN ── */
+#login-screen { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; background: var(--white); }
+.login-logo { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--gold-dark), var(--gold2)); display: flex; align-items: center; justify-content: center; font-size: 32px; color: white; margin: 0 auto 24px; box-shadow: 0 12px 32px rgba(201,168,76,0.30); }
+.login-brand { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 700; color: var(--black); text-align: center; margin-bottom: 4px; }
+.login-tagline { font-size: 11px; color: var(--gold); letter-spacing: 3.5px; text-align: center; margin-bottom: 40px; text-transform: uppercase; }
+.login-card { background: var(--white); border: 1px solid var(--gray-200); border-radius: 24px; padding: 36px 28px; width: 100%; max-width: 360px; box-shadow: var(--shadow-lg); }
+.login-label { font-size: 11px; color: var(--gray-600); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
+.login-input { width: 100%; border: 1.5px solid var(--gray-200); border-radius: 12px; padding: 14px 16px; font-size: 18px; font-family: monospace; letter-spacing: 8px; text-align: center; outline: none; background: var(--gray-50); transition: border-color 0.2s, box-shadow 0.2s; }
+.login-input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,0.12); }
+.login-err { font-size: 12px; color: var(--red); text-align: center; margin-top: 8px; min-height: 18px; }
+.login-btn { width: 100%; background: var(--black); color: white; border: none; border-radius: 12px; padding: 15px; font-size: 14px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; margin-top: 16px; transition: background 0.2s, transform 0.1s; font-family: 'Inter', sans-serif; }
+.login-btn:hover { background: var(--gray-800); }
+.login-btn:active { transform: scale(0.98); }
+
+/* ── APP SHELL ── */
+#app-shell { display: none; flex-direction: column; height: 100vh; overflow: hidden; }
+
+/* ── TOP BAR ── */
+.top-bar { background: var(--white); border-bottom: 1px solid var(--gray-100); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+.top-brand { display: flex; flex-direction: column; }
+.top-brand-name { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--black); line-height: 1.1; }
+.top-brand-sub { font-size: 9px; color: var(--gray-400); letter-spacing: 2.5px; text-transform: uppercase; margin-top: 1px; }
+.top-actions { display: flex; align-items: center; gap: 8px; }
+
+/* Mode Switch Toggle */
+.mode-switch { display: flex; background: var(--gray-100); border-radius: 20px; padding: 3px; gap: 2px; }
+.mode-switch-btn { padding: 4px 12px; border-radius: 16px; border: none; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; color: var(--gray-400); background: none; letter-spacing: 0.3px; }
+.mode-switch-btn.active { background: var(--black); color: white; box-shadow: var(--shadow-sm); }
+.mode-switch-btn.active.staff-active { background: var(--gold); color: white; }
+.exit-btn { background: none; border: 1.5px solid var(--gray-200); border-radius: 8px; padding: 5px 12px; font-size: 12px; cursor: pointer; color: var(--gray-600); font-family: 'Inter', sans-serif; font-weight: 500; }
+
+/* ── MAIN SCROLL ── */
+.main-scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; background: var(--off-white); }
+.screen-pad { padding: 20px 16px; }
+
+/* ── BOTTOM NAV ── */
+.bottom-nav { background: var(--white); border-top: 1px solid var(--gray-100); display: flex; flex-shrink: 0; padding-bottom: env(safe-area-inset-bottom); }
+.nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 2px; background: none; border: none; cursor: pointer; color: var(--gray-400); gap: 3px; font-family: 'Inter', sans-serif; transition: color 0.15s; position: relative; }
+.nav-btn.active { color: var(--gold-dark); }
+.nav-btn.active::after { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 20px; height: 2.5px; background: var(--gold); border-radius: 0 0 3px 3px; }
+.nav-btn.nav-center { background: none; }
+.nav-icon { font-size: 20px; line-height: 1; }
+.nav-label { font-size: 9px; font-weight: 500; letter-spacing: 0.3px; }
+
+/* ── SCREENS ── */
+.screen { display: none; }
+.screen.active { display: block; }
+.page-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; color: var(--black); margin-bottom: 20px; }
+
+/* ── CARDS ── */
+.card { background: var(--white); border-radius: var(--radius); padding: 20px; margin-bottom: 12px; border: 1px solid var(--gray-100); box-shadow: var(--shadow-sm); }
+.card-title { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 600; color: var(--black); margin-bottom: 14px; }
+
+/* ── FORMS ── */
+.fl { font-size: 11px; color: var(--gray-600); margin-bottom: 4px; margin-top: 12px; letter-spacing: 0.8px; text-transform: uppercase; display: block; font-weight: 500; }
+.fi { width: 100%; border: 1.5px solid var(--gray-200); border-radius: var(--radius-sm); padding: 11px 14px; font-size: 14px; outline: none; background: var(--white); font-family: 'Inter', sans-serif; transition: border-color 0.2s, box-shadow 0.2s; color: var(--black); margin-bottom: 2px; }
+.fi:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,0.10); }
+select.fi { cursor: pointer; }
+textarea.fi { resize: vertical; min-height: 60px; }
+
+/* ── BUTTONS ── */
+.btn-primary { background: var(--black); color: white; border: none; border-radius: 12px; padding: 13px 24px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.2s, transform 0.1s; letter-spacing: 0.3px; }
+.btn-primary:hover { background: var(--gray-800); }
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-gold { background: linear-gradient(135deg, var(--gold-dark), var(--gold2)); color: white; border: none; border-radius: 12px; padding: 13px 24px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; box-shadow: 0 4px 14px rgba(160,120,48,0.25); transition: opacity 0.2s, transform 0.1s; }
+.btn-gold:active { transform: scale(0.98); }
+.btn-gold:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-outline { background: none; border: 1.5px solid var(--gray-200); color: var(--gray-800); border-radius: 10px; padding: 9px 16px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif; transition: border-color 0.2s; }
+.btn-outline:hover { border-color: var(--gold); color: var(--gold-dark); }
+.btn-danger { background: none; border: 1.5px solid #FECACA; color: var(--red); border-radius: 10px; padding: 9px 16px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif; }
+
+/* ── RATES BANNER ── */
+.rates-banner { background: var(--gold-bg); border: 1px solid var(--gold-border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 16px; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 8px; }
+.rc { text-align: center; }
+.rc-label { font-size: 9px; color: var(--gray-400); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 3px; }
+.rc-val { font-size: 13px; font-weight: 600; color: var(--black); font-variant-numeric: tabular-nums; }
+
+/* ── AUTOCOMPLETE ── */
+.ac-wrap { position: relative; }
+.ac-drop { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--white); border-radius: 12px; border: 1px solid var(--gray-200); z-index: 300; box-shadow: var(--shadow-lg); max-height: 280px; overflow-y: auto; display: none; }
+.ac-drop.open { display: block; }
+.ac-item { padding: 12px 14px; cursor: pointer; border-bottom: 1px solid var(--gray-100); display: flex; align-items: center; gap: 10px; }
+.ac-item:last-child { border-bottom: none; }
+.ac-item:active { background: var(--gray-50); }
+.ac-tag { font-weight: 600; color: var(--gold-dark); font-size: 13px; }
+.ac-name { color: var(--gray-400); font-size: 12px; }
+.ac-thumb { width: 38px; height: 38px; border-radius: 8px; object-fit: cover; flex-shrink: 0; border: 1px solid var(--gray-200); }
+
+/* ── INVENTORY LIST ── */
+.inv-card { background: var(--white); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 10px; border: 1px solid var(--gray-100); box-shadow: var(--shadow-sm); }
+.inv-photo { width: 72px; height: 72px; border-radius: 10px; object-fit: cover; border: 1px solid var(--gray-100); flex-shrink: 0; }
+.inv-name { font-weight: 600; font-size: 14px; color: var(--black); }
+.inv-tag { font-size: 12px; color: var(--gold-dark); font-weight: 600; margin: 2px 0; }
+.inv-meta { font-size: 11px; color: var(--gray-400); }
+.inv-price { font-weight: 700; color: var(--gold-dark); font-size: 15px; font-family: 'Playfair Display', serif; }
+
+/* ── FILTER CHIPS ── */
+.chips { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 14px; padding-bottom: 2px; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chip { background: var(--white); border: 1.5px solid var(--gray-200); border-radius: 20px; padding: 6px 14px; font-size: 11px; cursor: pointer; white-space: nowrap; color: var(--gray-600); font-family: 'Inter', sans-serif; flex-shrink: 0; font-weight: 500; transition: all 0.15s; }
+.chip.active { background: var(--black); color: white; border-color: var(--black); }
+
+/* ── PRICE BREAKDOWN (like reference photo) ── */
+.breakdown-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--gray-100); margin-bottom: 4px; }
+.breakdown-category-icon { width: 28px; height: 28px; border-radius: 50%; background: var(--gold-bg); border: 1.5px solid var(--gold-border); display: flex; align-items: center; justify-content: center; font-size: 13px; }
+.breakdown-category-name { font-weight: 700; font-size: 15px; color: var(--black); letter-spacing: 0.5px; text-transform: uppercase; }
+.breakdown-karat-badge { background: var(--gold-bg); border: 1px solid var(--gold-border); color: var(--gold-dark); font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+.breakdown-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 13px 0; border-bottom: 1px solid var(--gray-100); }
+.breakdown-row:last-child { border-bottom: none; }
+.breakdown-row-left { display: flex; flex-direction: column; gap: 2px; }
+.breakdown-row-label { font-size: 14px; color: var(--black); font-weight: 400; }
+.breakdown-row-sub { font-size: 11px; color: var(--gray-400); }
+.breakdown-row-value { font-size: 14px; color: var(--black); font-weight: 500; text-align: right; font-variant-numeric: tabular-nums; }
+.breakdown-total-bar { background: linear-gradient(135deg, var(--gold-dark), var(--gold2)); border-radius: 14px; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; margin-top: 16px; }
+.breakdown-total-label { font-size: 11px; color: rgba(255,255,255,0.8); letter-spacing: 2px; text-transform: uppercase; font-weight: 600; }
+.breakdown-total-value { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: white; }
+
+/* ── NOTIFICATION ── */
+.notif { position: fixed; top: 72px; left: 50%; transform: translateX(-50%) translateY(-20px); background: var(--black); color: white; padding: 10px 20px; border-radius: 100px; font-size: 13px; font-weight: 500; z-index: 9999; opacity: 0; transition: all 0.25s; pointer-events: none; white-space: nowrap; box-shadow: var(--shadow-lg); }
+.notif.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.notif.success { background: var(--green); }
+.notif.error { background: var(--red); }
+
+/* ── TABLE ── */
+.tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+.tbl th { text-align: left; padding: 8px 10px; color: var(--gray-400); font-weight: 600; border-bottom: 1px solid var(--gray-100); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+.tbl td { padding: 8px 10px; color: var(--black); border-bottom: 1px solid var(--gray-100); font-size: 13px; }
+.tbl td:not(:first-child) { text-align: center; }
+.tbl th:not(:first-child) { text-align: center; }
+.tbl tr:last-child td { border-bottom: none; }
+
+/* ── DASHBOARD GRID ── */
+.dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px; }
+.dash-grid-btn { background: var(--white); border: 1px solid var(--gray-100); border-radius: var(--radius); padding: 20px 16px; cursor: pointer; text-align: left; font-family: 'Inter', sans-serif; box-shadow: var(--shadow-sm); transition: box-shadow 0.2s, transform 0.15s; -webkit-tap-highlight-color: transparent; }
+.dash-grid-btn:active { transform: scale(0.97); box-shadow: none; }
+.dash-grid-icon { font-size: 24px; margin-bottom: 10px; display: block; }
+.dash-grid-title { font-size: 15px; font-weight: 600; color: var(--black); margin-bottom: 3px; }
+.dash-grid-sub { font-size: 11px; color: var(--gray-400); }
+
+/* ── STATS ROW ── */
+.stats-row { display: flex; gap: 8px; margin-bottom: 16px; }
+.stat-card { flex: 1; background: var(--white); border: 1px solid var(--gray-100); border-radius: var(--radius-sm); padding: 14px 12px; box-shadow: var(--shadow-sm); }
+.stat-icon { font-size: 16px; margin-bottom: 6px; }
+.stat-val { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--black); line-height: 1; margin-bottom: 2px; }
+.stat-lbl { font-size: 10px; color: var(--gray-400); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* ── WARN BANNER ── */
+.warn-banner { background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; font-size: 13px; color: #92400E; }
+
+/* ── NW BOX ── */
+.nw-box { background: var(--gold-bg); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--gray-600); margin: 8px 0; border: 1px solid var(--gold-border); }
+
+/* ── REPORT PERIOD ── */
+.period-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+.period-btn { background: var(--white); border: 1.5px solid var(--gray-200); border-radius: 20px; padding: 6px 14px; font-size: 11px; cursor: pointer; color: var(--gray-600); font-family: 'Inter', sans-serif; font-weight: 500; transition: all 0.15s; }
+.period-btn.active { background: var(--black); color: white; border-color: var(--black); }
+
+/* ── CUSTOMER VIEW ── */
+#customer-view { display: none; position: fixed; inset: 0; background: var(--white); z-index: 500; overflow-y: auto; flex-direction: column; }
+#customer-view.open { display: flex; }
+.cv-header { background: var(--white); border-bottom: 1px solid var(--gray-100); padding: 16px 20px; display: flex; align-items: center; gap: 14px; position: sticky; top: 0; z-index: 10; }
+.cv-back { width: 36px; height: 36px; border-radius: 50%; background: var(--gray-100); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; flex-shrink: 0; }
+.cv-header-info { flex: 1; }
+.cv-header-tag { font-size: 13px; color: var(--gold-dark); font-weight: 600; margin-bottom: 1px; }
+.cv-header-name { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--black); }
+.cv-body { padding: 0 16px 32px; }
+.cv-img { width: 100%; max-height: 260px; object-fit: cover; border-radius: var(--radius); margin: 16px 0; border: 1px solid var(--gray-100); }
+
+/* ── ACCESS DENIED ── */
+.access-denied { text-align: center; padding: 80px 24px; }
+.denied-icon { font-size: 48px; margin-bottom: 16px; }
+.denied-title { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--black); margin-bottom: 8px; }
+.denied-text { font-size: 13px; color: var(--gray-400); line-height: 1.6; margin-bottom: 24px; }
+
+/* ── BILL SUCCESS ── */
+.bill-success { text-align: center; padding: 40px 16px; }
+.success-icon { font-size: 56px; margin-bottom: 16px; }
+
+/* ── MISC ── */
+.flex-row { display: flex; align-items: center; gap: 8px; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+.text-gold { color: var(--gold-dark); }
+.text-muted { color: var(--gray-400); }
+.mt8 { margin-top: 8px; }
+.mt12 { margin-top: 12px; }
+.mt16 { margin-top: 16px; }
+.mb0 { margin-bottom: 0; }
+.full-width { width: 100%; }
+.bold { font-weight: 700; }
+.serif { font-family: 'Playfair Display', serif; }
+.empty-state { text-align: center; padding: 48px 24px; color: var(--gray-400); }
+.empty-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.4; }
+.divider { height: 1px; background: var(--gray-100); margin: 16px 0; }
+.gold-divider { height: 1px; background: linear-gradient(90deg, transparent, var(--gold-border), transparent); margin: 16px 0; }
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading">
+  <div class="loading-logo">✦</div>
+  <div class="loading-name">Gayatri Jewellers</div>
+  <div class="loading-sub">Purity · Elegance · Trust</div>
+</div>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-logo">✦</div>
+  <div class="login-brand">Gayatri Jewellers</div>
+  <div class="login-tagline">Purity · Elegance · Trust</div>
+  <div class="login-card">
+    <div class="login-label">Access Code</div>
+    <input class="login-input" type="password" id="pass-input" placeholder="••••••••" autocomplete="off"/>
+    <div class="login-err" id="err-text"></div>
+    <button class="login-btn" onclick="doLogin()">Enter</button>
+  </div>
+</div>
+
+<!-- APP SHELL -->
+<div id="app-shell">
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-brand">
+      <div class="top-brand-name">Gayatri Jewellers</div>
+      <div class="top-brand-sub">Purity · Elegance · Trust</div>
+    </div>
+    <div class="top-actions">
+      <div class="mode-switch" id="mode-switch" style="display:none;">
+        <button class="mode-switch-btn" id="switch-owner" onclick="switchMode('owner')">Owner</button>
+        <button class="mode-switch-btn staff-active" id="switch-staff" onclick="switchMode('staff')">Staff</button>
+      </div>
+      <button class="exit-btn" onclick="doLogout()">Exit</button>
+    </div>
+  </div>
+
+  <!-- MAIN SCROLL -->
+  <div class="main-scroll">
+    <!-- DASHBOARD -->
+    <div class="screen active screen-pad" id="screen-dashboard">
+      <div id="dash-rates-banner" class="rates-banner" style="display:none;"></div>
+      <div id="dash-warn" class="warn-banner" style="display:none;">
+        <span>⚠</span>
+        <span>Rates not set. <span style="color:var(--gold-dark);cursor:pointer;font-weight:600;" onclick="goScreen('rates')">Set today's rates →</span></span>
+      </div>
+      <div id="dash-stats" class="stats-row" style="display:none;"></div>
+      <div id="dash-stock" class="card" style="display:none;">
+        <div class="card-title">Stock Summary</div>
+        <table class="tbl" id="dash-stock-table">
+          <thead><tr><th>Category</th><th>Pcs</th><th>Weight</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="dash-grid" id="dash-quick"></div>
+    </div>
+
+    <!-- LOOKUP -->
+    <div class="screen screen-pad" id="screen-lookup">
+      <h2 class="page-title">Tag Lookup</h2>
+      <div class="ac-wrap">
+        <input class="fi" id="lookup-input" placeholder="Type tag e.g. RGS-01-12…" oninput="lookupAC()" autocomplete="off"/>
+        <div class="ac-drop" id="lookup-drop"></div>
+      </div>
+      <div id="lookup-result" class="mt12"></div>
+    </div>
+
+    <!-- BILLING -->
+    <div class="screen screen-pad" id="screen-billing">
+      <h2 class="page-title">Create Bill</h2>
+      <div id="billing-content"></div>
+    </div>
+
+    <!-- INVENTORY -->
+    <div class="screen screen-pad" id="screen-inventory">
+      <div id="inventory-content"></div>
+    </div>
+
+    <!-- RATES -->
+    <div class="screen screen-pad" id="screen-rates">
+      <h2 class="page-title">Today's Rates</h2>
+      <div class="card">
+        <label class="fl">24kt Gold Rate (₹/gram)</label>
+        <input class="fi" type="number" id="rate-gold24" placeholder="e.g. 7200" oninput="updateRatesPreview()"/>
+        <label class="fl">Silver Rate (₹/gram)</label>
+        <input class="fi" type="number" id="rate-silver" placeholder="e.g. 90"/>
+        <div id="rates-preview" style="display:none; background:var(--gold-bg); border-radius:10px; padding:14px; margin:12px 0; border:1px solid var(--gold-border);">
+          <div style="font-size:10px;color:var(--gray-400);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Auto-Calculated Rates</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;" id="rates-preview-grid"></div>
+        </div>
+        <button class="btn-gold full-width mt12" id="save-rates-btn" onclick="saveRates()" style="padding:14px;">Save Rates</button>
+      </div>
+    </div>
+
+    <!-- REPORTS -->
+    <div class="screen screen-pad" id="screen-reports">
+      <h2 class="page-title">Reports</h2>
+      <div class="period-btns" id="period-btns"></div>
+      <div id="reports-content"></div>
+    </div>
+
+    <!-- ADD/EDIT ITEM -->
+    <div class="screen screen-pad" id="screen-add-item">
+      <div id="add-item-content"></div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav" id="bottom-nav"></div>
+</div>
+
+<!-- CUSTOMER VIEW (Price Breakdown) -->
+<div id="customer-view">
+  <div class="cv-header">
+    <button class="cv-back" onclick="closeCustomerView()">←</button>
+    <div class="cv-header-info">
+      <div class="cv-header-tag" id="cv-tag-label"></div>
+      <div class="cv-header-name" id="cv-name-label"></div>
+    </div>
+  </div>
+  <div class="cv-body" id="cv-body"></div>
+</div>
+
+<!-- NOTIFICATION -->
+<div class="notif" id="notif"></div>
+
+<script>
+// ══════════════════════════════════════════════
+//  CONSTANTS
+// ══════════════════════════════════════════════
+const OWNER_PASS = "GJISKING001";
+const STAFF_PASS = "GJ888826";
+const CATS = ["Ladies Ring","Gents Ring","Ladies Set","Earrings","Necklace","Chain","Bracelet","Bangle","Pendant","Mangalsutra","Anklet","Nosering","Other"];
+const TYPES = ["22kt Plain","22kt Stone","18kt Diamond","14kt Diamond"];
+const PERIODS = ["daily","weekly","monthly","quarterly","yearly"];
+
+// ══════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════
+let mode = null;
+let currentScreen = "dashboard";
+let inventory = {};
+let rates = { gold24: 0, silver: 0 };
+let sales = {};
+let editingItemKey = null;
+let billingCart = [];
+let reportPeriod = "daily";
+let firebaseOk = false;
+let ownerAuthenticated = false;
+
+// ══════════════════════════════════════════════
+//  FIREBASE
+// ══════════════════════════════════════════════
+function initFirebase() {
+  if (!window._firebaseReady) {
+    document.addEventListener('firebase-ready', () => { firebaseOk = true; listenData(); });
+  } else { firebaseOk = true; listenData(); }
+}
+function listenData() {
+  if (!firebaseOk || !window._db) return;
+  const db = window._db;
+  window._onValue(window._ref(db, 'inventory'), snap => {
+    inventory = snap.val() || {};
+    if (currentScreen === 'dashboard') renderDashboard();
+    if (currentScreen === 'inventory') renderInventoryList();
+    if (currentScreen === 'lookup') { const v = document.getElementById('lookup-input').value; if (v) renderLookupResult(v); }
+    if (currentScreen === 'reports') renderReports();
+  });
+  window._onValue(window._ref(db, 'rates'), snap => {
+    rates = snap.val() || { gold24: 0, silver: 0 };
+    const g24el = document.getElementById('rate-gold24');
+    const silvEl = document.getElementById('rate-silver');
+    if (g24el) g24el.value = rates.gold24 || '';
+    if (silvEl) silvEl.value = rates.silver || '';
+    updateRatesPreview();
+    renderDashboard();
+    if (currentScreen === 'inventory') renderInventoryList();
+  });
+  window._onValue(window._ref(db, 'sales'), snap => {
+    sales = snap.val() || {};
+    if (currentScreen === 'reports') renderReports();
+    if (currentScreen === 'dashboard') renderDashboard();
+  });
+}
+function dbSet(path, val) { if (!firebaseOk) return Promise.resolve(); return window._set(window._ref(window._db, path), val); }
+function dbPush(path, val) { if (!firebaseOk) return Promise.resolve(); return window._push(window._ref(window._db, path), val); }
+function dbRemove(path) { if (!firebaseOk) return Promise.resolve(); return window._remove(window._ref(window._db, path)); }
+
+// ══════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════
+function inr(n) { return '₹' + Number(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 }); }
+function calcRates(g24) { return { r24: g24, r22: +(g24 * 0.945).toFixed(2), r18: +(g24 * 0.785).toFixed(2), r14: +(g24 * 0.62).toFixed(2) }; }
+function ctToG(ct) { return +((ct || 0) * 0.2).toFixed(4); }
+function calcNW(gw, dCt, sCt) { return +(gw - ctToG(dCt) - ctToG(sCt)).toFixed(4); }
+
+function calcPrice(item) {
+  if (!rates.gold24) return null;
+  const r = calcRates(rates.gold24);
+  const gw = parseFloat(item.gw) || 0;
+  const nw = parseFloat(item.nw) || gw;
+  const polish = parseFloat(item.polishPct) || 0;
+  const mkPG = parseFloat(item.makingPG) || 0;
+  const stChg = parseFloat(item.stoneChg) || 0;
+  const dChg = parseFloat(item.diamondChg) || 0;
+  const dCt = parseFloat(item.diamondCt) || 0;
+  const sCt = parseFloat(item.stoneCt) || 0;
+
+  let goldRate, baseW;
+  if (item.type === "22kt Plain") { goldRate = r.r22; baseW = gw; }
+  else if (item.type === "22kt Stone") { goldRate = r.r22; baseW = nw; }
+  else if (item.type === "18kt Diamond") { goldRate = r.r18; baseW = nw; }
+  else { goldRate = r.r14; baseW = nw; }
+
+  const polishW = +(baseW * polish / 100).toFixed(4);
+  const billW = +(baseW + polishW).toFixed(4);
+  const goldVal = +(billW * goldRate).toFixed(2);
+  const making = +(gw * mkPG).toFixed(2);
+  let stoneVal = 0, diamVal = 0;
+  if (item.type === "22kt Stone") stoneVal = +(ctToG(sCt) * stChg).toFixed(2);
+  if (item.type === "18kt Diamond" || item.type === "14kt Diamond") {
+    diamVal = +(dCt * dChg).toFixed(2);
+    if (sCt > 0) stoneVal = +(sCt * stChg).toFixed(2);
+  }
+  return { goldVal, making, stoneVal, diamVal, total: +(goldVal + making + stoneVal + diamVal).toFixed(2), goldRate, billW, baseW, polishW, polishPct: polish, gw, nw, dCt, sCt, dChg, stChg, mkPG };
+}
+
+function notify(msg, type = 'success') {
+  const el = document.getElementById('notif');
+  el.textContent = msg;
+  el.className = 'notif ' + type;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+// ══════════════════════════════════════════════
+//  LOGIN / LOGOUT / MODE SWITCH
+// ══════════════════════════════════════════════
+document.getElementById('pass-input').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+function doLogin() {
+  const p = document.getElementById('pass-input').value.trim();
+  if (p === OWNER_PASS) { mode = 'owner'; ownerAuthenticated = true; startApp(); }
+  else if (p === STAFF_PASS) { mode = 'staff'; startApp(); }
+  else { document.getElementById('err-text').textContent = 'Incorrect password. Try again.'; document.getElementById('pass-input').value = ''; }
+}
+
+function startApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-shell').style.display = 'flex';
+  if (ownerAuthenticated) {
+    document.getElementById('mode-switch').style.display = 'flex';
+  }
+  updateModeUI();
+  buildNav();
+  goScreen('dashboard');
+  updateRatesPreview();
+}
+
+function switchMode(newMode) {
+  if (newMode === 'owner' && !ownerAuthenticated) return;
+  mode = newMode;
+  updateModeUI();
+  buildNav();
+  goScreen('dashboard');
+}
+
+function updateModeUI() {
+  const ownerBtn = document.getElementById('switch-owner');
+  const staffBtn = document.getElementById('switch-staff');
+  if (!ownerBtn) return;
+  ownerBtn.classList.toggle('active', mode === 'owner');
+  staffBtn.classList.toggle('active', mode === 'staff');
+}
+
+function doLogout() {
+  mode = null; ownerAuthenticated = false;
+  document.getElementById('app-shell').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('pass-input').value = '';
+  document.getElementById('err-text').textContent = '';
+  document.getElementById('mode-switch').style.display = 'none';
+}
+
+// ══════════════════════════════════════════════
+//  NAV
+// ══════════════════════════════════════════════
+function buildNav() {
+  const allNav = [
+    { id: 'dashboard', label: 'Home', icon: '⌂' },
+    { id: 'lookup', label: 'Lookup', icon: '◎' },
+    { id: 'billing', label: 'Bill', icon: '⊟' },
+    { id: 'inventory', label: 'Stock', icon: '◈', ow: true },
+    { id: 'reports', label: 'Reports', icon: '≡', ow: true },
+  ];
+  const nav = allNav.filter(n => !n.ow || mode === 'owner');
+  document.getElementById('bottom-nav').innerHTML = nav.map(n =>
+    `<button class="nav-btn${currentScreen === n.id ? ' active' : ''}" id="nav-${n.id}" onclick="goScreen('${n.id}')">
+      <span class="nav-icon">${n.icon}</span>
+      <span class="nav-label">${n.label}</span>
+    </button>`
+  ).join('');
+}
+
+function goScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('screen-' + id)?.classList.add('active');
+  document.getElementById('nav-' + id)?.classList.add('active');
+  currentScreen = id;
+  document.querySelector('.main-scroll').scrollTop = 0;
+
+  if (id === 'dashboard') renderDashboard();
+  if (id === 'lookup') { document.getElementById('lookup-input').value = ''; document.getElementById('lookup-result').innerHTML = ''; document.getElementById('lookup-drop').classList.remove('open'); }
+  if (id === 'billing') renderBilling();
+  if (id === 'inventory') { if (mode !== 'owner') { renderAccessDenied('inventory-content'); return; } renderInventoryList(); }
+  if (id === 'rates') { if (mode !== 'owner') { document.getElementById('screen-rates').innerHTML = accessDeniedHTML(); return; } }
+  if (id === 'reports') { if (mode !== 'owner') { document.getElementById('reports-content').innerHTML = accessDeniedHTML(); return; } renderReports(); }
+}
+
+function accessDeniedHTML() {
+  return `<div class="access-denied"><div class="denied-icon">🔒</div><h3 class="denied-title">Owner Access Required</h3><p class="denied-text">Switch to Owner mode or login with the owner password to access this section.</p><button class="btn-outline" onclick="goScreen('dashboard')">Go Back</button></div>`;
+}
+function renderAccessDenied(id) { document.getElementById(id).innerHTML = accessDeniedHTML(); }
+
+// ══════════════════════════════════════════════
+//  DASHBOARD
+// ══════════════════════════════════════════════
+function renderDashboard() {
+  const r = calcRates(rates.gold24);
+  const items = Object.values(inventory);
+  const salesArr = Object.values(sales);
+
+  const ratesDiv = document.getElementById('dash-rates-banner');
+  if (rates.gold24 > 0) {
+    ratesDiv.style.display = '';
+    document.getElementById('dash-warn').style.display = 'none';
+    const rateList = [['24kt', r.r24], ['22kt', r.r22], ['18kt', r.r18], ['14kt', r.r14], ['Silver', rates.silver]];
+    ratesDiv.innerHTML = rateList.map(([l, v]) => `<div class="rc"><div class="rc-label">${l}</div><div class="rc-val">${v > 0 ? inr(v) : '—'}</div></div>`).join('');
+  } else {
+    ratesDiv.style.display = 'none';
+    document.getElementById('dash-warn').style.display = mode === 'owner' ? '' : 'none';
+  }
+
+  const statsDiv = document.getElementById('dash-stats');
+  const stockDiv = document.getElementById('dash-stock');
+
+  if (mode === 'owner') {
+    statsDiv.style.display = '';
+    stockDiv.style.display = '';
+    const today = new Date().toDateString();
+    const todayRev = salesArr.filter(s => new Date(s.date).toDateString() === today).reduce((a, s) => a + (s.total || 0), 0);
+    const totalGw = items.reduce((a, i) => a + (parseFloat(i.gw) || 0), 0).toFixed(2);
+    statsDiv.innerHTML = [['◈', items.length, 'Items'], ['⊞', totalGw + 'g', 'Weight'], ['₹', inr(todayRev), "Today"]].map(([ic, v, l]) =>
+      `<div class="stat-card"><div class="stat-icon">${ic}</div><div class="stat-val">${v}</div><div class="stat-lbl">${l}</div></div>`
+    ).join('');
+
+    const catMap = {};
+    items.forEach(i => { if (!catMap[i.category]) catMap[i.category] = { p: 0, g: 0 }; catMap[i.category].p++; catMap[i.category].g += parseFloat(i.gw) || 0; });
+    const tbody = document.querySelector('#dash-stock-table tbody');
+    if (Object.keys(catMap).length === 0) {
+      tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--gray-400);padding:16px;">No inventory yet</td></tr>';
+    } else {
+      tbody.innerHTML = Object.entries(catMap).map(([c, v]) => `<tr><td>${c}</td><td>${v.p}</td><td>${v.g.toFixed(2)}g</td></tr>`).join('');
+    }
+  } else {
+    statsDiv.style.display = 'none';
+    stockDiv.style.display = 'none';
+  }
+
+  const quickActions = [
+    { ic: '➕', l: 'Add Item', sub: 'Register new jewellery', sc: 'add-item-direct', ow: true },
+    { ic: '📦', l: 'Inventory', sub: 'Browse & search stock', sc: 'inventory', ow: true },
+    { ic: '🧾', l: 'Create Bill', sub: 'Invoice with discount', sc: 'billing' },
+    { ic: '🔍', l: 'Tag Lookup', sub: 'Find item by tag', sc: 'lookup' },
+    { ic: '📊', l: 'Reports', sub: 'Sales & stock report', sc: 'reports', ow: true },
+    { ic: '📈', l: 'Set Rates', sub: 'Update gold rates', sc: 'rates', ow: true },
+  ];
+  const filtered = quickActions.filter(a => !a.ow || mode === 'owner');
+  document.getElementById('dash-quick').innerHTML = filtered.map(b =>
+    `<button class="dash-grid-btn" onclick="${b.sc === 'add-item-direct' ? 'goAddItem(null)' : `goScreen('${b.sc}')`}">
+      <span class="dash-grid-icon">${b.ic}</span>
+      <div class="dash-grid-title">${b.l}</div>
+      <div class="dash-grid-sub">${b.sub}</div>
+    </button>`
+  ).join('');
+}
+
+// ══════════════════════════════════════════════
+//  LOOKUP
+// ══════════════════════════════════════════════
+function lookupAC() {
+  const q = document.getElementById('lookup-input').value.trim().toLowerCase();
+  const drop = document.getElementById('lookup-drop');
+  document.getElementById('lookup-result').innerHTML = '';
+  if (q.length < 2) { drop.classList.remove('open'); return; }
+  const matches = Object.entries(inventory).filter(([k, i]) => i.tag.toLowerCase().includes(q)).slice(0, 8);
+  if (!matches.length) { drop.classList.remove('open'); return; }
+  drop.innerHTML = matches.map(([k, i]) =>
+    `<div class="ac-item" onclick="selectLookupItem('${k}')">
+      ${i.photo ? `<img class="ac-thumb" src="${i.photo}" alt=""/>` : ''}
+      <div><span class="ac-tag">${i.tag}</span> <span class="ac-name">${i.name} · ${i.type}</span></div>
+    </div>`
+  ).join('');
+  drop.classList.add('open');
+}
+
+function selectLookupItem(key) {
+  const item = inventory[key];
+  document.getElementById('lookup-input').value = item.tag;
+  document.getElementById('lookup-drop').classList.remove('open');
+  renderLookupResultItem(key, item);
+}
+
+function renderLookupResult(q) {
+  const match = Object.entries(inventory).find(([k, i]) => i.tag.toLowerCase() === q.toLowerCase());
+  if (!match) return;
+  renderLookupResultItem(match[0], match[1]);
+}
+
+function renderLookupResultItem(key, item) {
+  const pricing = calcPrice(item);
+  const div = document.getElementById('lookup-result');
+  div.innerHTML = `
+    <div class="card">
+      <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:16px;">
+        ${item.photo ? `<img src="${item.photo}" style="width:88px;height:88px;object-fit:cover;border-radius:12px;border:1px solid var(--gray-100);flex-shrink:0;" alt=""/>` : ''}
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:16px;color:var(--black);margin-bottom:3px;">${item.name}</div>
+          <div style="font-size:13px;color:var(--gold-dark);font-weight:600;margin-bottom:4px;">${item.tag}</div>
+          <div style="font-size:12px;color:var(--gray-400);">${item.category} · ${item.type}</div>
+          <div style="font-size:12px;color:var(--gray-600);margin-top:2px;">GW: ${item.gw}g${item.nw && item.nw != item.gw ? ` · NW: ${item.nw}g` : ''}</div>
+          ${item.notes ? `<div style="font-size:11px;color:var(--gray-400);margin-top:4px;font-style:italic;">${item.notes}</div>` : ''}
+        </div>
+      </div>
+      ${pricing ? `
+        <div class="breakdown-total-bar" style="margin-top:0;border-radius:10px;padding:16px 20px;">
+          <div class="breakdown-total-label">Total Value</div>
+          <div class="breakdown-total-value" style="font-size:22px;">${inr(pricing.total)}</div>
+        </div>
+        <button class="btn-outline full-width mt12" onclick="openCustomerView('${key}')">View Full Price Breakdown →</button>
+      ` : `<div style="background:var(--gold-bg);border-radius:8px;padding:12px;text-align:center;font-size:13px;color:var(--gold-dark);">Rates not set. Contact owner.</div>`}
+    </div>`;
+}
+
+// ══════════════════════════════════════════════
+//  CUSTOMER VIEW — PRICE BREAKDOWN (reference style)
+// ══════════════════════════════════════════════
+function openCustomerView(key) {
+  const item = inventory[key];
+  if (!item) return;
+  const pricing = calcPrice(item);
+  if (!pricing) { notify('Rates not set', 'error'); return; }
+
+  document.getElementById('cv-tag-label').textContent = item.tag;
+  document.getElementById('cv-name-label').textContent = item.name;
+
+  const karat = item.type.startsWith('22') ? '22 Karat' : item.type.startsWith('18') ? '18 Karat' : '14 Karat';
+  const isPlain = item.type === '22kt Plain';
+  const isSt = item.type === '22kt Stone';
+  const isDia = item.type === '18kt Diamond' || item.type === '14kt Diamond';
+
+  // Build rows array based on type
+  let rows = [];
+
+  // Row 1: Rate
+  rows.push({
+    label: `${karat} Rate`,
+    sub: 'per gram',
+    value: `${inr(pricing.goldRate)}/g`
+  });
+
+  // Row 2: Gold Weight
+  rows.push({
+    label: 'Gold Weight',
+    sub: '',
+    value: `${pricing.baseW.toFixed(3)} g`
+  });
+
+  // Row 3: Polish
+  if (pricing.polishPct > 0) {
+    rows.push({
+      label: `Polish (${pricing.polishPct}%)`,
+      sub: `of ${pricing.baseW.toFixed(3)} g`,
+      value: `${pricing.polishW.toFixed(3)} g`
+    });
+    rows.push({
+      label: 'Gold Weight incl. Polish',
+      sub: '',
+      value: `${pricing.billW.toFixed(3)} g`
+    });
+    rows.push({
+      label: 'Gold Price incl. Polish',
+      sub: `${pricing.billW.toFixed(3)}g × ${inr(pricing.goldRate)}`,
+      value: inr(pricing.goldVal)
+    });
+  } else {
+    rows.push({
+      label: 'Gold Price',
+      sub: `${pricing.billW.toFixed(3)}g × ${inr(pricing.goldRate)}`,
+      value: inr(pricing.goldVal)
+    });
+  }
+
+  // Making charges
+  if (pricing.making > 0) {
+    rows.push({
+      label: 'Making Charges',
+      sub: `${pricing.gw}g × ${inr(pricing.mkPG)}/g`,
+      value: inr(pricing.making)
+    });
+  }
+
+  // Stone charges (22kt stone)
+  if (isSt && pricing.stoneVal > 0) {
+    rows.push({
+      label: 'Stone Charges',
+      sub: `${ctToG(pricing.sCt).toFixed(3)}g × ${inr(pricing.stChg)}/g`,
+      value: inr(pricing.stoneVal)
+    });
+  }
+
+  // Diamond charges
+  if (isDia) {
+    if (pricing.diamVal > 0) {
+      rows.push({
+        label: 'Diamond Charges',
+        sub: `${pricing.dCt} ct × ${inr(pricing.dChg)}/ct`,
+        value: inr(pricing.diamVal)
+      });
+    }
+    if (pricing.stoneVal > 0) {
+      rows.push({
+        label: 'Stone Charges',
+        sub: `${pricing.sCt} ct × ${inr(pricing.stChg)}/ct`,
+        value: inr(pricing.stoneVal)
+      });
+    }
+  }
+
+  const categoryIcon = getCategoryIcon(item.category);
+
+  document.getElementById('cv-body').innerHTML = `
+    ${item.photo ? `<img class="cv-img" src="${item.photo}" alt="${item.name}"/>` : '<div style="height:16px;"></div>'}
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div style="padding:16px 20px;">
+        <div class="breakdown-header">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="breakdown-category-icon">${categoryIcon}</div>
+            <span class="breakdown-category-name">${item.category.toUpperCase()}</span>
+          </div>
+          <span class="breakdown-karat-badge">${karat}</span>
+        </div>
+        ${rows.map(row => `
+          <div class="breakdown-row">
+            <div class="breakdown-row-left">
+              <div class="breakdown-row-label">${row.label}</div>
+              ${row.sub ? `<div class="breakdown-row-sub">${row.sub}</div>` : ''}
+            </div>
+            <div class="breakdown-row-value">${row.value}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="breakdown-total-bar" style="border-radius:0;">
+        <div class="breakdown-total-label">Total Value</div>
+        <div class="breakdown-total-value">${inr(pricing.total)}</div>
+      </div>
+    </div>
+    <div style="text-align:center;padding:20px 16px;font-size:11px;color:var(--gray-400);line-height:2;">
+      <strong style="font-family:'Playfair Display',serif;font-size:13px;color:var(--gold-dark);">Gayatri Jewellers</strong><br/>
+      BIS Hallmarked · Certified Purity · Transparent Pricing
+    </div>
+  `;
+
+  document.getElementById('customer-view').classList.add('open');
+  document.getElementById('customer-view').scrollTop = 0;
+}
+
+function getCategoryIcon(cat) {
+  const icons = { 'Ladies Ring': '💍', 'Gents Ring': '💍', 'Necklace': '📿', 'Chain': '⛓', 'Bracelet': '🔗', 'Earrings': '✨', 'Bangle': '🔄', 'Pendant': '🏅', 'Mangalsutra': '🟤', 'Anklet': '🦶', 'Nosering': '⭕', 'Ladies Set': '👑' };
+  return icons[cat] || '✦';
+}
+
+function closeCustomerView() {
+  document.getElementById('customer-view').classList.remove('open');
+}
+
+// ══════════════════════════════════════════════
+//  BILLING
+// ══════════════════════════════════════════════
+let billDone = null;
+
+function renderBilling() {
+  if (billDone) { renderBillSuccess(); return; }
+  const cartHTML = billingCart.length === 0 ? '' : billingCart.map((item, idx) => {
+    const p = calcPrice(item);
+    return `<div class="inv-card" style="display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <div class="inv-name">${item.name}</div>
+        <div class="inv-tag">${item.tag} · ${item.gw}g</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span class="inv-price">${p ? inr(p.total) : '—'}</span>
+        <button onclick="removeFromCart(${idx})" style="background:none;border:none;color:var(--gray-400);font-size:22px;cursor:pointer;line-height:1;">×</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  const grand = billingCart.reduce((a, i) => a + (calcPrice(i)?.total || 0), 0);
+  document.getElementById('billing-content').innerHTML = `
+    <input class="fi" id="bill-cust-name" placeholder="Customer Name *"/>
+    <input class="fi" id="bill-phone" placeholder="Phone Number (optional)" style="margin-top:8px;"/>
+    <div class="ac-wrap mt12">
+      <input class="fi" id="bill-search" placeholder="Search by tag to add items…" oninput="billAC()" autocomplete="off" style="margin-bottom:0;"/>
+      <div class="ac-drop" id="bill-drop"></div>
+    </div>
+    <div class="mt12">${cartHTML}</div>
+    ${billingCart.length > 0 ? `
+      <div class="card mt8">
+        <div class="flex-between" style="margin-bottom:14px;">
+          <span style="font-size:15px;font-weight:600;color:var(--black);">Grand Total</span>
+          <span style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--gold-dark);">${inr(grand)}</span>
+        </div>
+        <button class="btn-gold full-width" onclick="generateBill()" style="padding:14px;">Generate Bill</button>
+      </div>
+    ` : ''}`;
+}
+
+function billAC() {
+  const q = document.getElementById('bill-search').value.trim().toLowerCase();
+  const drop = document.getElementById('bill-drop');
+  if (q.length < 2) { drop.classList.remove('open'); return; }
+  const inCartTags = billingCart.map(i => i.tag);
+  const matches = Object.entries(inventory).filter(([k, i]) => i.tag.toLowerCase().includes(q) && !inCartTags.includes(i.tag)).slice(0, 6);
+  if (!matches.length) { drop.classList.remove('open'); return; }
+  drop.innerHTML = matches.map(([k, i]) =>
+    `<div class="ac-item" onclick="addToCart('${k}')">
+      ${i.photo ? `<img class="ac-thumb" src="${i.photo}" alt=""/>` : ''}
+      <span class="ac-tag">${i.tag}</span><span class="ac-name">${i.name} · ${i.gw}g</span>
+    </div>`
+  ).join('');
+  drop.classList.add('open');
+}
+
+function addToCart(key) { billingCart.push(inventory[key]); renderBilling(); }
+function removeFromCart(idx) { billingCart.splice(idx, 1); renderBilling(); }
+
+function generateBill() {
+  const name = document.getElementById('bill-cust-name').value.trim();
+  const phone = document.getElementById('bill-phone').value.trim();
+  if (!name) { notify('Enter customer name', 'error'); return; }
+  if (!billingCart.length) { notify('Add at least one item', 'error'); return; }
+  const grand = billingCart.reduce((a, i) => a + (calcPrice(i)?.total || 0), 0);
+  const bill = {
+    date: new Date().toISOString(), customer: name, phone,
+    items: billingCart.map(i => ({ tag: i.tag, name: i.name, total: calcPrice(i)?.total || 0 })),
+    total: grand
+  };
+  dbPush('sales', bill).then(() => {
+    billDone = bill; billingCart = [];
+    renderBillSuccess();
+    notify('Bill generated!');
+  });
+}
+
+function renderBillSuccess() {
+  document.getElementById('billing-content').innerHTML = `
+    <div class="bill-success">
+      <div class="success-icon">✅</div>
+      <h3 style="font-family:'Playfair Display',serif;font-size:24px;color:var(--black);margin-bottom:6px;">Bill Generated!</h3>
+      <div style="color:var(--gray-400);font-size:13px;margin-bottom:20px;">${billDone.customer}${billDone.phone ? ' · ' + billDone.phone : ''}</div>
+      <div class="breakdown-total-bar" style="border-radius:12px;margin-bottom:20px;">
+        <div class="breakdown-total-label">Total Amount</div>
+        <div class="breakdown-total-value">${inr(billDone.total)}</div>
+      </div>
+      <div class="card" style="text-align:left;">
+        ${billDone.items.map(it => `<div class="flex-between" style="padding:8px 0;border-bottom:1px solid var(--gray-100);font-size:13px;"><span style="color:var(--gray-600);">${it.tag} — ${it.name}</span><span style="font-weight:600;color:var(--gold-dark);">${inr(it.total)}</span></div>`).join('')}
+      </div>
+      <button class="btn-primary mt16" style="padding:13px 40px;" onclick="billDone=null;renderBilling();">New Bill</button>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════
+//  INVENTORY
+// ══════════════════════════════════════════════
+let invSearch = '', invFilter = 'All';
+
+function renderInventoryList() {
+  const items = Object.entries(inventory).filter(([k, i]) => {
+    const ms = i.tag.toLowerCase().includes(invSearch.toLowerCase()) || i.name.toLowerCase().includes(invSearch.toLowerCase());
+    return ms && (invFilter === 'All' || i.type === invFilter);
+  });
+
+  document.getElementById('inventory-content').innerHTML = `
+    <div class="flex-between" style="margin-bottom:16px;">
+      <h2 class="page-title mb0">Inventory</h2>
+      <button class="btn-gold" onclick="goAddItem(null)" style="padding:10px 18px;font-size:13px;">+ Add</button>
+    </div>
+    <input class="fi" placeholder="Search by tag or name…" oninput="invSearch=this.value;renderInventoryList()" value="${invSearch}"/>
+    <div class="chips mt12">
+      ${['All', ...TYPES].map(t => `<button class="chip${invFilter === t ? ' active' : ''}" onclick="invFilter='${t}';renderInventoryList()">${t}</button>`).join('')}
+    </div>
+    <div style="font-size:12px;color:var(--gray-400);margin-bottom:12px;">${items.length} item${items.length !== 1 ? 's' : ''}</div>
+    ${items.length === 0 ? `<div class="empty-state"><div class="empty-icon">📦</div><p>No items found</p></div>` :
+      items.map(([k, item]) => {
+        const p = calcPrice(item);
+        return `<div class="inv-card">
+          <div style="display:flex;gap:12px;">
+            ${item.photo ? `<img src="${item.photo}" class="inv-photo" alt=""/>` : ''}
+            <div style="flex:1;min-width:0;">
+              <div class="flex-between">
+                <div style="min-width:0;flex:1;">
+                  <div class="inv-name" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${item.name}</div>
+                  <div class="inv-tag">${item.tag}</div>
+                  <div class="inv-meta">${item.type} · ${item.category} · GW:${item.gw}g${item.nw && item.nw != item.gw ? ` NW:${item.nw}g` : ''}</div>
+                </div>
+                ${p ? `<div class="inv-price" style="margin-left:10px;flex-shrink:0;">${inr(p.total)}</div>` : ''}
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px;">
+            <button class="btn-outline" style="flex:1;padding:8px 0;font-size:12px;" onclick="goAddItem('${k}')">Edit</button>
+            <button class="btn-danger" style="flex:1;padding:8px 0;font-size:12px;" onclick="deleteItem('${k}','${item.name}')">Delete</button>
+          </div>
+        </div>`;
+      }).join('')
+    }`;
+}
+
+function deleteItem(key, name) {
+  if (!confirm('Delete "' + name + '"?')) return;
+  dbRemove('inventory/' + key).then(() => notify('Deleted'));
+}
+
+function goAddItem(key) {
+  editingItemKey = key;
+  renderAddItemForm(key ? inventory[key] : null);
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('screen-add-item').classList.add('active');
+  currentScreen = 'add-item';
+  document.querySelector('.main-scroll').scrollTop = 0;
+}
+
+function renderAddItemForm(item) {
+  const isEdit = !!item;
+  const t = item?.type || TYPES[0];
+  const isDia = t === '18kt Diamond' || t === '14kt Diamond';
+  const isSt = t === '22kt Stone';
+  const gw = parseFloat(item?.gw) || 0;
+  const dCt = parseFloat(item?.diamondCt) || 0;
+  const sCt = parseFloat(item?.stoneCt) || 0;
+  const nw = isDia ? calcNW(gw, dCt, sCt) : gw;
+
+  document.getElementById('add-item-content').innerHTML = `
+    <div class="flex-between" style="margin-bottom:16px;">
+      <h2 class="page-title mb0">${isEdit ? 'Edit Item' : 'Add Item'}</h2>
+      <button onclick="goScreen('inventory')" class="exit-btn">Cancel</button>
+    </div>
+    <div class="card">
+      <label class="fl">Tag Number *</label>
+      <input class="fi" id="ai-tag" value="${item?.tag || ''}" placeholder="e.g. RGS-01-12" oninput="this.value=this.value.toUpperCase()"/>
+      <label class="fl">Product Name *</label>
+      <input class="fi" id="ai-name" value="${item?.name || ''}" placeholder="e.g. Ladies Gold Ring"/>
+      <label class="fl">Category</label>
+      <select class="fi" id="ai-cat">${CATS.map(c => `<option${item?.category === c ? ' selected' : ''}>${c}</option>`).join('')}</select>
+      <label class="fl">Jewellery Type</label>
+      <select class="fi" id="ai-type" onchange="onTypeChange()">${TYPES.map(tp => `<option${item?.type === tp ? ' selected' : ''}>${tp}</option>`).join('')}</select>
+      <label class="fl">Gross Weight (g) *</label>
+      <input class="fi" type="number" id="ai-gw" value="${item?.gw || ''}" placeholder="e.g. 10.5" oninput="onWeightChange()"/>
+
+      <div id="ai-diamond-fields" style="${isDia ? '' : 'display:none;'}">
+        <label class="fl">Diamond Weight (carats)</label>
+        <input class="fi" type="number" id="ai-dct" value="${item?.diamondCt || ''}" placeholder="0.00" oninput="onWeightChange()"/>
+        <label class="fl">Stone Weight (carats, if any)</label>
+        <input class="fi" type="number" id="ai-sct" value="${item?.stoneCt || ''}" placeholder="0.00" oninput="onWeightChange()"/>
+        <div class="nw-box">Auto Net Weight: <strong id="ai-nw-val">${nw}g</strong> <span style="font-size:11px;color:var(--gray-400);">(diamond/stone weight deducted)</span></div>
+      </div>
+
+      <div id="ai-stone-fields" style="${isSt ? '' : 'display:none;'}">
+        <label class="fl">Stone Weight (carats)</label>
+        <input class="fi" type="number" id="ai-sct2" value="${item?.stoneCt || ''}" placeholder="0.00"/>
+      </div>
+
+      <div class="gold-divider"></div>
+      <div style="font-size:10px;color:var(--gray-400);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">Charges</div>
+
+      <label class="fl">Polish % (on <span id="ai-polish-on">${isDia || isSt ? 'net' : 'gross'}</span> weight)</label>
+      <input class="fi" type="number" id="ai-polish" value="${item?.polishPct ?? 10}" placeholder="10"/>
+      <label class="fl">Making Charges (₹/gram on gross weight)</label>
+      <input class="fi" type="number" id="ai-making" value="${item?.makingPG ?? 230}" placeholder="230"/>
+
+      <div id="ai-stone-chg" style="${isSt ? '' : 'display:none;'}">
+        <label class="fl">Stone Charges (₹/gram)</label>
+        <input class="fi" type="number" id="ai-stchg" value="${item?.stoneChg || 0}"/>
+      </div>
+
+      <div id="ai-diamond-chg" style="${isDia ? '' : 'display:none;'}">
+        <label class="fl">Diamond Charges (₹/carat)</label>
+        <input class="fi" type="number" id="ai-dchg" value="${item?.diamondChg || 0}"/>
+        <div id="ai-stone-chg2" style="${sCt > 0 ? '' : 'display:none;'}">
+          <label class="fl">Stone Charges (₹/carat)</label>
+          <input class="fi" type="number" id="ai-stchg2" value="${item?.stoneChg || 0}"/>
+        </div>
+      </div>
+
+      <div class="gold-divider"></div>
+      <label class="fl">Product Photo</label>
+      <input type="file" accept="image/*" onchange="handlePhoto(event)" style="font-size:12px;margin-bottom:8px;"/>
+      ${item?.photo ? `<img src="${item.photo}" id="ai-photo-preview" style="width:90px;height:90px;object-fit:cover;border-radius:10px;border:1px solid var(--gray-100);display:block;margin-bottom:8px;"/>` : `<img id="ai-photo-preview" style="width:90px;height:90px;object-fit:cover;border-radius:10px;border:1px solid var(--gray-100);display:none;margin-bottom:8px;"/>`}
+
+      <label class="fl">Notes</label>
+      <textarea class="fi" id="ai-notes" placeholder="Any additional notes">${item?.notes || ''}</textarea>
+
+      <button class="btn-gold full-width mt16" onclick="saveItem()" style="padding:14px;">${isEdit ? 'Update Item' : 'Save Item'}</button>
+    </div>`;
+  window._photoData = item?.photo || null;
+}
+
+function onTypeChange() {
+  const t = document.getElementById('ai-type').value;
+  const isDia = t === '18kt Diamond' || t === '14kt Diamond';
+  const isSt = t === '22kt Stone';
+  document.getElementById('ai-diamond-fields').style.display = isDia ? '' : 'none';
+  document.getElementById('ai-stone-fields').style.display = isSt ? '' : 'none';
+  document.getElementById('ai-stone-chg').style.display = isSt ? '' : 'none';
+  document.getElementById('ai-diamond-chg').style.display = isDia ? '' : 'none';
+  const pol = document.getElementById('ai-polish-on');
+  if (pol) pol.textContent = isDia || isSt ? 'net' : 'gross';
+  onWeightChange();
+}
+
+function onWeightChange() {
+  const t = document.getElementById('ai-type')?.value;
+  const isDia = t === '18kt Diamond' || t === '14kt Diamond';
+  if (!isDia) return;
+  const gw = parseFloat(document.getElementById('ai-gw')?.value) || 0;
+  const dCt = parseFloat(document.getElementById('ai-dct')?.value) || 0;
+  const sCt = parseFloat(document.getElementById('ai-sct')?.value) || 0;
+  const nw = calcNW(gw, dCt, sCt);
+  const el = document.getElementById('ai-nw-val');
+  if (el) el.textContent = nw + 'g';
+  const s2 = document.getElementById('ai-stone-chg2');
+  if (s2) s2.style.display = sCt > 0 ? '' : 'none';
+}
+
+function handlePhoto(e) {
+  const f = e.target.files[0];
+  if (!f) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const MAX = 600; let w = img.width, h = img.height;
+      if (w > MAX) { h = h * MAX / w; w = MAX; }
+      if (h > MAX) { w = w * MAX / h; h = MAX; }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      const data = canvas.toDataURL('image/jpeg', 0.7);
+      window._photoData = data;
+      const preview = document.getElementById('ai-photo-preview');
+      preview.src = data; preview.style.display = 'block';
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(f);
+}
+
+function saveItem() {
+  const tag = document.getElementById('ai-tag').value.trim().toUpperCase();
+  const name = document.getElementById('ai-name').value.trim();
+  const gw = parseFloat(document.getElementById('ai-gw').value) || 0;
+  if (!tag || !name || !gw) { notify('Tag, Name & Weight required', 'error'); return; }
+  const type = document.getElementById('ai-type').value;
+  const isDia = type === '18kt Diamond' || type === '14kt Diamond';
+  const isSt = type === '22kt Stone';
+  const dCt = parseFloat(document.getElementById('ai-dct')?.value) || 0;
+  const sCt = isDia ? (parseFloat(document.getElementById('ai-sct')?.value) || 0) : (parseFloat(document.getElementById('ai-sct2')?.value) || 0);
+  const nw = isDia ? calcNW(gw, dCt, sCt) : gw;
+  const item = {
+    tag, name, gw, nw,
+    category: document.getElementById('ai-cat').value,
+    type,
+    diamondCt: dCt, stoneCt: sCt,
+    polishPct: parseFloat(document.getElementById('ai-polish').value) || 0,
+    makingPG: parseFloat(document.getElementById('ai-making').value) || 0,
+    stoneChg: isSt ? (parseFloat(document.getElementById('ai-stchg').value) || 0) : (isDia ? (parseFloat(document.getElementById('ai-stchg2')?.value) || 0) : 0),
+    diamondChg: isDia ? (parseFloat(document.getElementById('ai-dchg').value) || 0) : 0,
+    photo: window._photoData || '',
+    notes: document.getElementById('ai-notes').value.trim(),
+  };
+  const path = editingItemKey ? 'inventory/' + editingItemKey : 'inventory/' + Date.now();
+  dbSet(path, item).then(() => {
+    notify(editingItemKey ? 'Item updated!' : 'Item saved!');
+    editingItemKey = null;
+    goScreen('inventory');
+  });
+}
+
+// ══════════════════════════════════════════════
+//  RATES
+// ══════════════════════════════════════════════
+function updateRatesPreview() {
+  const g = parseFloat(document.getElementById('rate-gold24')?.value) || 0;
+  const prev = document.getElementById('rates-preview');
+  if (!prev) return;
+  if (g > 0) {
+    const r = calcRates(g);
+    prev.style.display = '';
+    document.getElementById('rates-preview-grid').innerHTML = [['22kt', r.r22, '94.5%'], ['18kt', r.r18, '78.5%'], ['14kt', r.r14, '62%']].map(([l, v, p]) =>
+      `<div style="text-align:center;background:var(--white);border-radius:8px;padding:10px 4px;border:1px solid var(--gray-200);">
+        <div style="font-size:9px;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">${l}</div>
+        <div style="font-weight:700;color:var(--black);font-size:14px;">${inr(v)}</div>
+        <div style="font-size:9px;color:var(--gray-400);">${p}</div>
+      </div>`
+    ).join('');
+  } else { prev.style.display = 'none'; }
+}
+
+function saveRates() {
+  const g24 = parseFloat(document.getElementById('rate-gold24').value) || 0;
+  const silver = parseFloat(document.getElementById('rate-silver').value) || 0;
+  if (!g24) { notify('Enter 24kt gold rate', 'error'); return; }
+  dbSet('rates', { gold24: g24, silver }).then(() => {
+    const btn = document.getElementById('save-rates-btn');
+    btn.textContent = '✓ Saved & Synced';
+    btn.style.background = 'var(--green)';
+    setTimeout(() => { btn.textContent = 'Save Rates'; btn.style.background = ''; }, 3000);
+    notify('Rates saved & synced!');
+  });
+}
+
+// ══════════════════════════════════════════════
+//  REPORTS
+// ══════════════════════════════════════════════
+function initReportPeriods() {
+  document.getElementById('period-btns').innerHTML = PERIODS.map(p =>
+    `<button class="period-btn${reportPeriod === p ? ' active' : ''}" onclick="reportPeriod='${p}';initReportPeriods();renderReports();">${p.charAt(0).toUpperCase() + p.slice(1)}</button>`
+  ).join('');
+}
+
+function inPeriod(dateStr) {
+  const d = new Date(dateStr), now = new Date();
+  if (reportPeriod === 'daily') return d.toDateString() === now.toDateString();
+  if (reportPeriod === 'weekly') { const df = (now - d) / 864e5; return df >= 0 && df < 7; }
+  if (reportPeriod === 'monthly') return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  if (reportPeriod === 'quarterly') return Math.floor(d.getMonth() / 3) === Math.floor(now.getMonth() / 3) && d.getFullYear() === now.getFullYear();
+  return d.getFullYear() === now.getFullYear();
+}
+
+function renderReports() {
+  initReportPeriods();
+  const salesArr = Object.values(sales).filter(s => inPeriod(s.date));
+  const rev = salesArr.reduce((a, s) => a + (s.total || 0), 0);
+  const items = Object.values(inventory);
+  const cm = {};
+  items.forEach(i => {
+    if (!cm[i.type]) cm[i.type] = { p: 0, g: 0, v: 0 };
+    cm[i.type].p++; cm[i.type].g += parseFloat(i.gw) || 0;
+    if (rates.gold24 > 0) cm[i.type].v += calcPrice(i)?.total || 0;
+  });
+
+  document.getElementById('reports-content').innerHTML = `
+    <div class="card">
+      <div class="card-title">Sales — ${reportPeriod.charAt(0).toUpperCase() + reportPeriod.slice(1)}</div>
+      <div style="display:flex;gap:12px;margin-bottom:16px;">
+        <div style="flex:1;background:var(--gray-50);border-radius:10px;padding:14px;text-align:center;border:1px solid var(--gray-100);">
+          <div style="font-size:10px;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Bills</div>
+          <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;">${salesArr.length}</div>
+        </div>
+        <div style="flex:1;background:var(--gold-bg);border-radius:10px;padding:14px;text-align:center;border:1px solid var(--gold-border);">
+          <div style="font-size:10px;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Revenue</div>
+          <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--gold-dark);">${inr(rev)}</div>
+        </div>
+      </div>
+      <div style="max-height:220px;overflow-y:auto;">
+        ${salesArr.slice().reverse().slice(0, 30).map(s => `
+          <div style="border-top:1px solid var(--gray-100);padding:10px 0;">
+            <div class="flex-between" style="font-size:13px;margin-bottom:2px;"><span style="font-weight:600;">${s.customer}${s.phone ? ` (${s.phone})` : ''}</span><span style="color:var(--gold-dark);font-weight:600;">${inr(s.total)}</span></div>
+            <div style="font-size:11px;color:var(--gray-400);">${new Date(s.date).toLocaleString()}</div>
+          </div>`).join('')}
+        ${salesArr.length === 0 ? '<p style="text-align:center;color:var(--gray-400);padding:20px;font-size:13px;">No sales in this period</p>' : ''}
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Stock Value by Type</div>
+      ${Object.entries(cm).map(([type, v]) => `
+        <div style="border-bottom:1px solid var(--gray-100);padding:10px 0;">
+          <div class="flex-between" style="font-size:13px;margin-bottom:3px;"><span style="font-weight:600;">${type}</span><span style="color:var(--gold-dark);font-weight:600;">${rates.gold24 > 0 ? inr(v.v) : 'Set rates'}</span></div>
+          <div style="font-size:11px;color:var(--gray-400);">${v.p} pieces · ${v.g.toFixed(2)}g</div>
+        </div>`).join('')}
+      ${Object.keys(cm).length === 0 ? '<p style="text-align:center;color:var(--gray-400);padding:20px;font-size:13px;">No inventory</p>' : ''}
+    </div>`;
+}
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  initFirebase();
+  setTimeout(() => {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+  }, 1200);
+});
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.ac-wrap')) {
+    document.querySelectorAll('.ac-drop').forEach(d => d.classList.remove('open'));
+  }
+});
+</script>
+</body>
+</html>
